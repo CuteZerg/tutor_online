@@ -37,13 +37,17 @@ import { useAuthStore } from '@/store/authStore';
 export default function RoomPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, fetchUser } = useAuthStore();
 
   const [token, setToken] = useState('');
   const [serverUrl, setServerUrl] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      fetchUser();
+    }
+
     // 1. Fetch config to get LIVEKIT_URL at runtime (avoiding Nginx /api proxy)
     const fetchConfig = async () => {
       try {
@@ -82,7 +86,7 @@ export default function RoomPage() {
         fetchToken().finally(() => setLoading(false));
       }
     });
-  }, [id, router]);
+  }, [id, router, user, fetchUser]);
 
   if (loading || !token || !serverUrl) {
     return (
@@ -93,6 +97,16 @@ export default function RoomPage() {
     );
   }
 
+  const handleLeaveClass = () => {
+    if (user?.role === 'tutor') {
+      router.push('/admin');
+    } else if (user?.role === 'student') {
+      router.push('/student');
+    } else {
+      router.push('/');
+    }
+  };
+
   return (
     <LiveKitRoom
       video={true}
@@ -101,30 +115,31 @@ export default function RoomPage() {
       token={token}
       serverUrl={serverUrl}
       data-lk-theme="default"
-      className="flex w-full h-screen bg-slate-950 text-white overflow-hidden font-sans"
+      style={{ display: 'flex', flexDirection: 'row', height: '100vh', width: '100vw' }}
+      className="bg-slate-950 text-white overflow-hidden font-sans"
     >
       {/* Left Area: Whiteboard */}
-      <div className="flex-1 flex flex-col h-full border-r border-slate-800 shadow-2xl z-10">
+      <div className="flex-1 flex flex-col h-full border-r border-slate-800 shadow-2xl z-10" style={{ height: '100%' }}>
         <div className="h-16 px-6 bg-slate-900 border-b border-slate-800 flex justify-between items-center shadow-sm">
           <h1 className="text-lg font-bold text-slate-100 flex items-center gap-3">
             <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
             Интерактивный класс
           </h1>
           <button
-            onClick={() => router.push(`/${user?.role === 'tutor' ? 'admin' : 'student'}`)}
+            onClick={handleLeaveClass}
             className="px-5 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl text-sm font-semibold hover:bg-rose-500/20 transition-all cursor-pointer"
           >
             Покинуть класс
           </button>
         </div>
-        <div className="flex-1 p-6 bg-slate-900/50 flex flex-col min-h-0 relative">
+        <div className="flex-1 p-6 bg-slate-900/50 flex flex-col min-h-0 relative" style={{ height: 'calc(100% - 4rem)' }}>
           <Whiteboard />
         </div>
       </div>
 
       {/* Right Area: Video grid and controls */}
-      <div className="w-[420px] flex flex-col h-full relative bg-slate-950 z-20">
-        <div className="flex-1 overflow-hidden p-4">
+      <div className="w-[420px] flex flex-col h-full relative bg-slate-950 z-20" style={{ height: '100%' }}>
+        <div className="flex-1 overflow-hidden p-4 min-h-0">
           <VideoGrid />
         </div>
 
