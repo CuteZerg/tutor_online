@@ -12,8 +12,7 @@ services:
     restart: unless-stopped
 
   backend:
-    build: ./backend
-    image: tutoronline-backend:latest
+    image: cutezerg/tutoronline-backend:latest
     depends_on:
       - db
     environment:
@@ -26,8 +25,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
-    image: tutoronline-frontend:latest
+    image: cutezerg/tutoronline-frontend:latest
     depends_on:
       - backend
     environment:
