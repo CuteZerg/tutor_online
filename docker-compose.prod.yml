@@ -12,6 +12,7 @@ services:
     restart: unless-stopped
 
   backend:
+    build: ./backend
     image: tutoronline-backend:latest
     depends_on:
       - db
@@ -25,6 +26,7 @@ services:
     restart: unless-stopped
 
   frontend:
+    build: ./frontend
     image: tutoronline-frontend:latest
     depends_on:
       - backend
