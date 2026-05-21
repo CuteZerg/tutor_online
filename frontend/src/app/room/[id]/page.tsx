@@ -60,7 +60,7 @@ export default function RoomPage() {
       video={true}
       audio={true}
       token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL || 'wss://tutoronline-rb4lztss.livekit.cloud'}
       data-lk-theme="default"
       className="flex w-full h-screen bg-slate-950 text-white overflow-hidden font-sans"
     >
