@@ -32,8 +32,10 @@ async def add_security_headers(request, call_next):
     return response
 
 # CORS configuration
-# Using CORS_ORIGINS from environment, fallback to localhost
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+# Using CORS_ORIGINS strictly from environment
+cors_origins = os.getenv("CORS_ORIGINS")
+if not cors_origins:
+    raise RuntimeError("CORS_ORIGINS environment variable is required")
 origins_list = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
 
 app.add_middleware(

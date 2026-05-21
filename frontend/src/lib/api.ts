@@ -6,7 +6,13 @@ export const getApiUrl = () => {
   if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
     return window.location.origin + '/api';
   }
-  return envUrl || 'http://localhost:8000';
+  if (!envUrl) {
+    if (typeof window === 'undefined') {
+      console.warn('WARNING: NEXT_PUBLIC_API_URL environment variable is not defined.');
+    }
+    return '';
+  }
+  return envUrl;
 };
 
 export const getWsUrl = (path: string) => {

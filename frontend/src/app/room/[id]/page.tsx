@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { 
-  LiveKitRoom, 
-  RoomAudioRenderer, 
-  ControlBar, 
-  GridLayout, 
-  ParticipantTile, 
+import {
+  LiveKitRoom,
+  RoomAudioRenderer,
+  ControlBar,
+  GridLayout,
+  ParticipantTile,
   useTracks
 } from '@livekit/components-react';
 import { Track } from 'livekit-client';
@@ -38,22 +38,21 @@ export default function RoomPage() {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useAuthStore();
-  
+
   const [token, setToken] = useState('');
   const [serverUrl, setServerUrl] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Fetch config to get LIVEKIT_URL
-    const fetchConfig = async () => {
-      try {
-        const res = await fetch('/api/config');
-        const data = await res.json();
-        setServerUrl(data.livekitUrl);
-      } catch (err) {
-        setServerUrl('wss://tutoronline-rb4lztss.livekit.cloud');
-      }
-    };
+    // 1. Set livekit url
+    const livekitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
+    if (!livekitUrl) {
+      console.error('CRITICAL: NEXT_PUBLIC_LIVEKIT_URL is not set');
+      alert('Ошибка конфигурации: LIVEKIT URL не задан');
+      router.push('/');
+      return;
+    }
+    setServerUrl(livekitUrl);
 
     // 2. Fetch connection token
     const fetchToken = async () => {
@@ -67,7 +66,7 @@ export default function RoomPage() {
       }
     };
 
-    Promise.all([fetchConfig(), fetchToken()]).finally(() => {
+    fetchToken().finally(() => {
       setLoading(false);
     });
   }, [id, router]);
@@ -97,8 +96,8 @@ export default function RoomPage() {
             <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
             Интерактивный класс
           </h1>
-          <button 
-            onClick={() => router.push(`/${user?.role === 'tutor' ? 'tutor' : 'student'}`)} 
+          <button
+            onClick={() => router.push(`/${user?.role === 'tutor' ? 'tutor' : 'student'}`)}
             className="px-5 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl text-sm font-semibold hover:bg-rose-500/20 transition-all cursor-pointer"
           >
             Покинуть класс
@@ -114,13 +113,13 @@ export default function RoomPage() {
         <div className="flex-1 overflow-hidden p-4">
           <VideoGrid />
         </div>
-        
+
         {/* LiveKit Default ControlBar */}
         <div className="p-4 border-t border-slate-800 bg-slate-900 shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
           <ControlBar variation="minimal" />
         </div>
       </div>
-      
+
       {/* Audio component is required to hear other participants */}
       <RoomAudioRenderer />
     </LiveKitRoom>
