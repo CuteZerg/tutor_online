@@ -53,3 +53,35 @@ async def get_room_token(
     ))
     
     return {"token": token.to_jwt()}
+
+# In-memory storage for whiteboards
+whiteboards = {}
+
+@router.get("/{lesson_id}/whiteboard")
+async def get_whiteboard(
+    lesson_id: int,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Get the current state of the whiteboard."""
+    return {"paths": whiteboards.get(lesson_id, [])}
+
+@router.post("/{lesson_id}/whiteboard")
+async def update_whiteboard(
+    lesson_id: int,
+    paths: list,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Update the whiteboard state."""
+    whiteboards[lesson_id] = paths
+    return {"status": "success"}
+
+@router.delete("/{lesson_id}/whiteboard")
+async def clear_whiteboard(
+    lesson_id: int,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Clear the whiteboard state."""
+    if lesson_id in whiteboards:
+        whiteboards[lesson_id] = []
+    return {"status": "success"}
+
