@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas';
 import { useDataChannel } from '@livekit/components-react';
-import { Eraser, Pen, Trash2 } from 'lucide-react';
+import { Eraser, Pen, Trash2, Undo } from 'lucide-react';
 
 export default function Whiteboard() {
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
