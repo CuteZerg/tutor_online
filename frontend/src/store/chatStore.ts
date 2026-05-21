@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { api } from '@/lib/api';
+import Cookies from 'js-cookie';
+import { api, getWsUrl } from '@/lib/api';
 
 interface ChatStore {
   unreadTotal: number;
@@ -39,8 +40,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       return;
     }
     
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
-    const wsUrl = baseUrl.replace('http', 'ws') + `/ws/?token=${token}`;
+    const wsUrl = getWsUrl(`/ws/?token=${token}`);
     
     const ws = new WebSocket(wsUrl);
     

@@ -5,7 +5,7 @@ import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-cale
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { api } from '@/lib/api';
+import { api, getWsUrl } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { Plus, X, Calendar as CalendarIcon, Clock, DollarSign, Tag, User, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -89,7 +89,7 @@ export default function Calendar({ onLessonBooked }: CalendarProps) {
     fetchLessons();
     
     // WebSocket Real-time Updates
-    const wsUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace('http', 'ws') + '/ws/';
+    const wsUrl = getWsUrl('/ws/');
     const ws = new WebSocket(wsUrl);
     
     ws.onmessage = (event) => {

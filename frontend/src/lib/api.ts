@@ -1,7 +1,20 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+export const getApiUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+    return window.location.origin + '/api';
+  }
+  return envUrl || 'http://localhost:8000';
+};
+
+export const getWsUrl = (path: string) => {
+  const baseUrl = getApiUrl().replace('http', 'ws');
+  return `${baseUrl}${path.startsWith('/') ? path : '/' + path}`;
+};
+
+const API_URL = getApiUrl();
 
 export const api = axios.create({
   baseURL: API_URL,
