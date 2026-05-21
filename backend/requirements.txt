@@ -1,0 +1,10 @@
+fastapi[all]
+SQLAlchemy[asyncio]
+alembic
+asyncpg
+python-jose[cryptography]
+passlib[bcrypt]
+pydantic[email]
+pydantic-settings
+python-multipart
+livekit-api

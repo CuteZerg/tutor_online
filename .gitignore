@@ -1,0 +1,36 @@
+# Node modules
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Next.js
+.next/
+out/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*
+
+# AI Agents and Tools Artifacts
+GEMINI.md
+CLAUDE.md
+AGENTS.md
+.agent/
+SOW.md
+*.md~
+
+# Uploads and temporary files
+backend/uploads/
