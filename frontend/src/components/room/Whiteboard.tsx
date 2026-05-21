@@ -57,15 +57,15 @@ export default function Whiteboard() {
       {/* Top Toolbar */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md border border-slate-700 p-2 rounded-2xl flex items-center gap-2 shadow-2xl z-20">
         <button 
-          onClick={() => setEraserMode(false)}
-          className={`p-3 rounded-xl transition-all cursor-pointer ${!eraserMode ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
+          onClick={() => setEraseMode(false)}
+          className={`p-3 rounded-xl transition-all cursor-pointer ${!eraseMode ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
           title="Карандаш"
         >
           <Pen size={18} />
         </button>
         <button 
-          onClick={() => setEraserMode(true)}
-          className={`p-3 rounded-xl transition-all cursor-pointer ${eraserMode ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
+          onClick={() => setEraseMode(true)}
+          className={`p-3 rounded-xl transition-all cursor-pointer ${eraseMode ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
           title="Ластик"
         >
           <Eraser size={18} />
