@@ -18,6 +18,8 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-tutoronline}
       - JWT_SECRET=${JWT_SECRET:-your-super-secret-key}
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
     volumes:
       - backend_uploads:/app/uploads
     ports:
