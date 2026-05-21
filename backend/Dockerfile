@@ -18,8 +18,13 @@ COPY . .
 ENV PYTHONPATH=/app
 ENV PORT=8000
 
-# Create uploads directory
-RUN mkdir -p uploads
+# Create uploads directory and non-root user
+RUN mkdir -p uploads && \
+    useradd -m -U appuser && \
+    chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
 
 # Expose port
 EXPOSE 8000

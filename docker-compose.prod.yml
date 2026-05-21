@@ -20,6 +20,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-your-super-secret-key}
       - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
       - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
     volumes:
       - backend_uploads:/app/uploads
     ports:
