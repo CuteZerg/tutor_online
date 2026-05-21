@@ -1,7 +1,11 @@
 import subprocess
 import sys
 
-cmd = """ssh root@135.106.130.91 "docker exec tutor_online_db_1 psql -U postgres -d tutoronline -c \\"ALTER TYPE lessonstatus ADD VALUE 'PENDING';\\"" """
+if len(sys.argv) < 2:
+    print("Usage: python run_ssh.py '<command>'")
+    sys.exit(1)
+
+cmd = f"""ssh root@135.106.130.91 "{sys.argv[1]}" """
 result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
 print("STDOUT:", result.stdout)
 print("STDERR:", result.stderr)

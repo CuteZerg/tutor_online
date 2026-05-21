@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import os
@@ -68,7 +68,7 @@ async def get_whiteboard(
 @router.post("/{lesson_id}/whiteboard")
 async def update_whiteboard(
     lesson_id: int,
-    paths: list,
+    paths: list = Body(...),
     current_user: User = Depends(get_current_active_user)
 ):
     """Update the whiteboard state."""
