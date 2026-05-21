@@ -58,7 +58,7 @@ export default function RoomPage() {
     // 2. Fetch connection token
     const fetchToken = async () => {
       try {
-        const res = await api.get(`/room/${id}/connect`);
+        const res = await api.get(`/room/${id}/token`);
         setToken(res.data.token);
       } catch (err) {
         console.error('Failed to get token', err);
