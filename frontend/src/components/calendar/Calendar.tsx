@@ -27,7 +27,7 @@ interface Lesson {
   start_time: string;
   end_time: string;
   price: number;
-  status: 'open' | 'scheduled' | 'completed' | 'cancelled';
+  status: 'open' | 'pending' | 'scheduled' | 'completed' | 'cancelled';
   tutor_id: number;
   student_id: number | null;
 }
