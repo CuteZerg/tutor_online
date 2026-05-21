@@ -44,15 +44,26 @@ export default function RoomPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Set livekit url
-    const livekitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
-    if (!livekitUrl) {
-      console.error('CRITICAL: NEXT_PUBLIC_LIVEKIT_URL is not set');
-      alert('Ошибка конфигурации: LIVEKIT URL не задан');
-      router.push('/');
-      return;
-    }
-    setServerUrl(livekitUrl);
+    // 1. Fetch config to get LIVEKIT_URL at runtime (avoiding Nginx /api proxy)
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/next-config');
+        const data = await res.json();
+        
+        if (!data.livekitUrl) {
+          console.error('CRITICAL: LIVEKIT URL is not set');
+          alert('Ошибка конфигурации: LIVEKIT URL не задан на сервере');
+          router.push('/');
+          return null;
+        }
+        setServerUrl(data.livekitUrl);
+        return data.livekitUrl;
+      } catch (err) {
+        console.error('Failed to fetch config', err);
+        router.push('/');
+        return null;
+      }
+    };
 
     // 2. Fetch connection token
     const fetchToken = async () => {
@@ -66,8 +77,10 @@ export default function RoomPage() {
       }
     };
 
-    fetchToken().finally(() => {
-      setLoading(false);
+    fetchConfig().then((url) => {
+      if (url) {
+        fetchToken().finally(() => setLoading(false));
+      }
     });
   }, [id, router]);
 
