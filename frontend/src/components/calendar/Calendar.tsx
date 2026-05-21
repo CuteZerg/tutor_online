@@ -8,6 +8,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { api, getWsUrl } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { Plus, X, Calendar as CalendarIcon, Clock, DollarSign, Tag, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 const locales = {
   'ru': ru,
@@ -89,7 +90,8 @@ export default function Calendar({ onLessonBooked }: CalendarProps) {
     fetchLessons();
     
     // WebSocket Real-time Updates
-    const wsUrl = getWsUrl('/ws/');
+    const token = Cookies.get('access_token');
+    const wsUrl = getWsUrl(`/ws/?token=${token}`);
     const ws = new WebSocket(wsUrl);
     
     ws.onmessage = (event) => {

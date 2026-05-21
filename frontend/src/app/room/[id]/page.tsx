@@ -32,21 +32,47 @@ function VideoGrid() {
   );
 }
 
-export default function RoomPage() {
-  const params = useParams();
-  const router = useRouter();
-  const [token, setToken] = useState('');
-  
-  useEffect(() => {
-    api.get(`/room/${params.id}/token`).then(res => {
-      setToken(res.data.token);
-    }).catch(err => {
-      alert(err.response?.data?.detail || 'Ошибка доступа к комнате');
-      router.push('/');
-    });
-  }, [params.id, router]);
+import { useAuthStore } from '@/store/authStore';
 
-  if (!token) {
+export default function RoomPage() {
+  const { id } = useParams();
+  const router = useRouter();
+  const { user } = useAuthStore();
+  
+  const [token, setToken] = useState('');
+  const [serverUrl, setServerUrl] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 1. Fetch config to get LIVEKIT_URL
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/api/config');
+        const data = await res.json();
+        setServerUrl(data.livekitUrl);
+      } catch (err) {
+        setServerUrl('wss://tutoronline-rb4lztss.livekit.cloud');
+      }
+    };
+
+    // 2. Fetch connection token
+    const fetchToken = async () => {
+      try {
+        const res = await api.get(`/room/${id}/connect`);
+        setToken(res.data.token);
+      } catch (err) {
+        console.error('Failed to get token', err);
+        alert('Ошибка при подключении к классу. Возможно класс еще не создан или у вас нет доступа.');
+        router.push('/');
+      }
+    };
+
+    Promise.all([fetchConfig(), fetchToken()]).finally(() => {
+      setLoading(false);
+    });
+  }, [id, router]);
+
+  if (loading || !token || !serverUrl) {
     return (
       <div className="h-screen w-full bg-slate-950 flex flex-col items-center justify-center text-slate-300">
         <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -60,7 +86,7 @@ export default function RoomPage() {
       video={true}
       audio={true}
       token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      serverUrl={serverUrl}
       data-lk-theme="default"
       className="flex w-full h-screen bg-slate-950 text-white overflow-hidden font-sans"
     >
@@ -72,7 +98,7 @@ export default function RoomPage() {
             Интерактивный класс
           </h1>
           <button 
-            onClick={() => router.push('/')} 
+            onClick={() => router.push(`/${user?.role === 'tutor' ? 'tutor' : 'student'}`)} 
             className="px-5 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl text-sm font-semibold hover:bg-rose-500/20 transition-all cursor-pointer"
           >
             Покинуть класс

@@ -55,7 +55,7 @@ export default function StudentDashboardPage() {
   
   // Find next scheduled lesson
   const nextLesson = upcomingLessons
-    .filter(l => new Date(l.start_time) > new Date())
+    .filter(l => new Date(l.end_time) > new Date())
     .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())[0];
 
   const formatLessonDate = (dateStr: string) => {

@@ -40,56 +40,54 @@ export default function Whiteboard() {
     await send(new TextEncoder().encode(msg), { reliable: true });
   };
 
+  const handleUndo = async () => {
+    canvasRef.current?.undo();
+    const msg = JSON.stringify({ type: 'undo' });
+    await send(new TextEncoder().encode(msg), { reliable: true });
+  };
+
+  const handleDrawEnd = () => {
+    canvasRef.current?.exportPaths().then(paths => {
+      handleChange(paths);
+    });
+  };
+
   return (
-    <div className="w-full h-full flex flex-col gap-4">
-      {/* Toolbar */}
-      <div className="flex items-center gap-4 bg-slate-800 p-3 rounded-2xl border border-slate-700">
-        <button
-          onClick={() => {
-            canvasRef.current?.eraseMode(false);
-            setEraseMode(false);
-          }}
-          className={`p-2 rounded-xl transition-colors ${!eraseMode ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-700'}`}
+    <div className="w-full h-full relative rounded-2xl overflow-hidden border border-slate-700 bg-white shadow-inner flex flex-col">
+      {/* Top Toolbar */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md border border-slate-700 p-2 rounded-2xl flex items-center gap-2 shadow-2xl z-20">
+        <button 
+          onClick={() => setEraserMode(false)}
+          className={`p-3 rounded-xl transition-all cursor-pointer ${!eraserMode ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
           title="Карандаш"
         >
-          <Pen size={20} />
+          <Pen size={18} />
         </button>
-        <button
-          onClick={() => {
-            canvasRef.current?.eraseMode(true);
-            setEraseMode(true);
-          }}
-          className={`p-2 rounded-xl transition-colors ${eraseMode ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-700'}`}
+        <button 
+          onClick={() => setEraserMode(true)}
+          className={`p-3 rounded-xl transition-all cursor-pointer ${eraserMode ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
           title="Ластик"
         >
-          <Eraser size={20} />
+          <Eraser size={18} />
         </button>
-        
-        <div className="h-6 w-px bg-slate-700 mx-2"></div>
-        
-        {/* Colors */}
-        {['#ffffff', '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7'].map(color => (
-          <button
-            key={color}
-            onClick={() => setStrokeColor(color)}
-            className={`w-6 h-6 rounded-full border-2 transition-transform ${strokeColor === color && !eraseMode ? 'scale-125 border-slate-300' : 'border-transparent'}`}
-            style={{ backgroundColor: color }}
-          />
-        ))}
-
-        <div className="flex-1"></div>
-
-        <button
-          onClick={handleClear}
-          className="p-2 text-rose-400 hover:bg-rose-500/20 rounded-xl transition-colors flex items-center gap-2"
+        <div className="w-[1px] h-6 bg-slate-700 mx-1"></div>
+        <button 
+          onClick={handleUndo}
+          className="p-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all cursor-pointer"
+          title="Отменить"
         >
-          <Trash2 size={20} />
-          <span className="text-sm font-semibold">Очистить</span>
+          <Undo size={18} />
+        </button>
+        <button 
+          onClick={handleClear}
+          className="p-3 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer"
+          title="Очистить доску"
+        >
+          <Trash2 size={18} />
         </button>
       </div>
 
-      {/* Canvas */}
-      <div className="flex-1 rounded-2xl overflow-hidden border border-slate-800 shadow-xl bg-slate-950">
+      <div className="flex-1 bg-[#1e293b]" onPointerUp={handleDrawEnd}>
         <ReactSketchCanvas
           ref={canvasRef}
           strokeWidth={4}

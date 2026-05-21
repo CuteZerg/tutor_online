@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useChatStore } from '@/store/chatStore';
-import { api } from '@/lib/api';
+import { api, getApiUrl } from '@/lib/api';
 import { Send, Image as ImageIcon, Paperclip, Code, X, Loader2, Check, CheckCheck, MessageCircle } from 'lucide-react';
 import CodeEditor from '@/components/editor/CodeEditor';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+const API_URL = getApiUrl();
 
 interface Contact {
   id: number;
