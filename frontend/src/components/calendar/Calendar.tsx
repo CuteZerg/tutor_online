@@ -355,8 +355,8 @@ export default function Calendar({ onLessonBooked }: CalendarProps) {
     );
   };
 
-  // Restrict calendar display hours: 07:00 - 23:59
-  const minTime = new Date(2026, 0, 1, 7, 0, 0);
+  // Restrict calendar display hours: 00:00 - 23:59
+  const minTime = new Date(2026, 0, 1, 0, 0, 0);
   const maxTime = new Date(2026, 0, 1, 23, 59, 59);
 
   return (
