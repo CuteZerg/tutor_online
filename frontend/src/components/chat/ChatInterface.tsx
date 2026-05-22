@@ -6,6 +6,7 @@ import { useChatStore } from '@/store/chatStore';
 import { api, getApiUrl } from '@/lib/api';
 import { Send, Image as ImageIcon, Paperclip, Code, X, Loader2, Check, CheckCheck, MessageCircle } from 'lucide-react';
 import CodeEditor from '@/components/editor/CodeEditor';
+import Cookies from 'js-cookie';
 
 const API_URL = getApiUrl();
 
@@ -152,9 +153,12 @@ export default function ChatInterface() {
     setIsUploading(true);
     const formData = new FormData();
     formData.append('file', file);
+    if (selectedContact) {
+      formData.append('shared_with_id', selectedContact.id.toString());
+    }
 
     try {
-      const res = await api.post('/chat/upload', formData, {
+      const res = await api.post('/files/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setAttachedImage(res.data.url);
@@ -266,9 +270,9 @@ export default function ChatInterface() {
                     >
                       {msg.attachment_url && (
                         <div className="p-2">
-                          <a href={API_URL + msg.attachment_url} target="_blank" rel="noopener noreferrer" className="cursor-pointer block relative group">
+                          <a href={`${API_URL}${msg.attachment_url}?token=${Cookies.get('access_token')}`} target="_blank" rel="noopener noreferrer" className="cursor-pointer block relative group">
                             <img 
-                              src={API_URL + msg.attachment_url} 
+                              src={`${API_URL}${msg.attachment_url}?token=${Cookies.get('access_token')}`} 
                               alt="Attachment" 
                               className="rounded-xl max-w-full h-auto object-cover max-h-[300px] transition-transform group-hover:opacity-90"
                             />
@@ -313,7 +317,7 @@ export default function ChatInterface() {
                 <div className="mb-4 flex gap-4">
                   {attachedImage && (
                     <div className="relative group">
-                      <img src={API_URL + attachedImage} className="h-20 rounded-lg border border-slate-700" alt="Preview" />
+                      <img src={`${API_URL}${attachedImage}?token=${Cookies.get('access_token')}`} className="h-20 rounded-lg border border-slate-700" alt="Preview" />
                       <button 
                         onClick={() => setAttachedImage(null)}
                         className="absolute -top-2 -right-2 bg-slate-800 text-rose-400 rounded-full p-1 border border-slate-700 hover:scale-110 transition-transform"

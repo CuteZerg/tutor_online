@@ -10,6 +10,13 @@ RUN npm ci
 COPY . .
 # We disable telemetry to speed up build
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Accept build arguments for public variables
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_LIVEKIT_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_LIVEKIT_URL=$NEXT_PUBLIC_LIVEKIT_URL
+
 RUN npm run build
 
 # Production runner

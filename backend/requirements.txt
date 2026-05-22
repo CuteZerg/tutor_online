@@ -8,3 +8,4 @@ pydantic[email]
 pydantic-settings
 python-multipart
 livekit-api
+boto3

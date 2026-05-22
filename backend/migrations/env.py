@@ -19,6 +19,7 @@ from src.users.models import User
 from src.lessons.models import Lesson
 from src.homeworks.models import Homework
 from src.chat.models import Message
+from src.files.models import File
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

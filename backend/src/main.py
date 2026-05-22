@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from src.auth.router import router as auth_router
 from src.users.router import router as users_router
@@ -10,6 +13,7 @@ from src.homeworks.router import router as homeworks_router
 from src.room.router import router as room_router
 from src.ws.router import router as ws_router
 from src.chat.router import router as chat_router
+from src.files.router import router as files_router
 
 app = FastAPI(
     title="TutorOnline API",
@@ -17,10 +21,9 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Setup static files for uploads
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+# UPLOAD_DIR = "uploads"
+# os.makedirs(UPLOAD_DIR, exist_ok=True)
+# app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # Security headers middleware
 @app.middleware("http")
@@ -57,3 +60,4 @@ app.include_router(homeworks_router)
 app.include_router(room_router)
 app.include_router(ws_router)
 app.include_router(chat_router)
+app.include_router(files_router)

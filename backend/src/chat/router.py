@@ -16,8 +16,7 @@ from .schemas import MessageCreate, MessageResponse, ContactResponse
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 
 @router.get("/contacts", response_model=List[ContactResponse])
 async def get_contacts(
@@ -122,16 +121,4 @@ async def send_message(
 
     return new_msg
 
-@router.post("/upload")
-async def upload_file(
-    file: UploadFile = File(...),
-    current_user: User = Depends(get_current_active_user)
-):
-    ext = file.filename.split(".")[-1] if "." in file.filename else ""
-    filename = f"{uuid.uuid4().hex}.{ext}"
-    file_path = os.path.join(UPLOAD_DIR, filename)
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    return {"url": f"/uploads/{filename}"}
