@@ -11,18 +11,20 @@ Write-Host "=========================================" -ForegroundColor Cyan
 
 # 1. Build Backend
 Write-Host "`n[1/4] Building Backend Image..." -ForegroundColor Yellow
-docker build -t "$BackendImage:latest" ./backend
+docker build -t "${BackendImage}:latest" ./backend
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Backend build failed." -ForegroundColor Red
     exit 1
 }
 
 # 2. Build Frontend
-$ProdApiUrl = "http://135.106.130.91/api"
+$ProdServerIP = "178.72.191.75"
+$ProdServerUser = "root"
+$ProdApiUrl = "http://178.72.191.75/api"
 $ProdLiveKitUrl = "wss://tutoronline-rb4lztss.livekit.cloud"
 
 Write-Host "`n[2/4] Building Frontend Image for Production..." -ForegroundColor Yellow
-docker build --build-arg NEXT_PUBLIC_API_URL=$ProdApiUrl --build-arg NEXT_PUBLIC_LIVEKIT_URL=$ProdLiveKitUrl -t "$FrontendImage:latest" ./frontend
+docker build --build-arg NEXT_PUBLIC_API_URL=$ProdApiUrl --build-arg NEXT_PUBLIC_LIVEKIT_URL=$ProdLiveKitUrl -t "${FrontendImage}:latest" ./frontend
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Frontend build failed." -ForegroundColor Red
     exit 1
@@ -30,7 +32,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # 3. Push Backend
 Write-Host "`n[3/4] Pushing Backend Image to DockerHub..." -ForegroundColor Yellow
-docker push "$BackendImage:latest"
+docker push "${BackendImage}:latest"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Backend push failed. Make sure you are logged in via 'docker login'." -ForegroundColor Red
     exit 1
@@ -38,7 +40,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # 4. Push Frontend
 Write-Host "`n[4/4] Pushing Frontend Image to DockerHub..." -ForegroundColor Yellow
-docker push "$FrontendImage:latest"
+docker push "${FrontendImage}:latest"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Frontend push failed." -ForegroundColor Red
     exit 1
