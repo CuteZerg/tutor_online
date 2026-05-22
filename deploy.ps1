@@ -45,10 +45,12 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "Frontend push failed." -ForegroundColor Red
     exit 1
 }
-
 Write-Host "`n=========================================" -ForegroundColor Green
 Write-Host " Deployment to DockerHub Successful!     " -ForegroundColor Green
 Write-Host "=========================================" -ForegroundColor Green
+Write-Host "`nOn your remote server, run:"
+Write-Host "docker-compose pull" -ForegroundColor Cyan
+Write-Host "docker-compose up -d" -ForegroundColor Cyan
 Write-Host "`nOn your remote server, run:"
 Write-Host "docker-compose pull" -ForegroundColor Cyan
 Write-Host "docker-compose up -d" -ForegroundColor Cyan
