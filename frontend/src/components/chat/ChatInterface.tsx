@@ -144,7 +144,7 @@ export default function ChatInterface() {
   };
 
   // Handle File Upload
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
       alert('Только изображения поддерживаются в данный момент.');
       return;
@@ -168,7 +168,7 @@ export default function ChatInterface() {
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [selectedContact]);
 
   // Handle File Picker
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,7 +191,7 @@ export default function ChatInterface() {
         break;
       }
     }
-  }, []);
+  }, [handleFileUpload]);
 
   useEffect(() => {
     window.addEventListener('paste', handlePaste);
@@ -258,55 +258,73 @@ export default function ChatInterface() {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-6 custom-scrollbar">
-              {messages.map(msg => {
-                const isMe = msg.sender_id === user?.id;
-                return (
-                  <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[75%] rounded-2xl ${
-                      isMe 
-                        ? 'bg-indigo-600/20 border border-indigo-500/20 text-slate-200 rounded-tr-sm' 
-                        : 'bg-slate-800/50 border border-slate-700/50 text-slate-200 rounded-tl-sm'
-                    } overflow-hidden shadow-sm`}
-                    >
-                      {msg.attachment_url && (
-                        <div className="p-2">
-                          <a href={`${API_URL}${msg.attachment_url}?token=${Cookies.get('access_token')}`} target="_blank" rel="noopener noreferrer" className="cursor-pointer block relative group">
-                            <img 
-                              src={`${API_URL}${msg.attachment_url}?token=${Cookies.get('access_token')}`} 
-                              alt="Attachment" 
-                              className="rounded-xl max-w-full h-auto object-cover max-h-[300px] transition-transform group-hover:opacity-90"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">
-                              <span className="bg-slate-900/80 text-white text-xs px-3 py-1.5 rounded-lg backdrop-blur-sm font-medium">
-                                Открыть оригинал
-                              </span>
-                            </div>
-                          </a>
-                        </div>
-                      )}
-                      
-                      {msg.code_snippet && (
-                        <div className="p-3 w-[600px] max-w-full h-[400px]">
-                          <CodeEditor initialCode={msg.code_snippet} readOnly={false} />
-                        </div>
-                      )}
+              {(() => {
+                const groupedMessages = messages.reduce((acc: Record<string, Message[]>, msg) => {
+                  const dateStr = new Date(msg.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+                  if (!acc[dateStr]) acc[dateStr] = [];
+                  acc[dateStr].push(msg);
+                  return acc;
+                }, {});
 
-                      {msg.content && (
-                        <div className="px-5 py-3 text-sm leading-relaxed whitespace-pre-wrap">
-                          {msg.content}
-                        </div>
-                      )}
-                      
-                      <div className={`px-5 py-2 text-[10px] font-medium flex items-center gap-1 ${isMe ? 'text-indigo-400/60 justify-end' : 'text-slate-500 justify-start'}`}>
-                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        {isMe && (
-                          msg.is_read ? <CheckCheck size={12} className="text-indigo-400" /> : <Check size={12} />
-                        )}
-                      </div>
+                return Object.entries(groupedMessages).map(([date, dateMessages]) => (
+                  <React.Fragment key={date}>
+                    <div className="flex justify-center my-2">
+                      <span className="text-xs font-medium bg-slate-800/80 text-slate-400 px-3 py-1 rounded-full border border-slate-700/50 backdrop-blur-sm">
+                        {date}
+                      </span>
                     </div>
-                  </div>
-                );
-              })}
+                    {dateMessages.map(msg => {
+                      const isMe = msg.sender_id === user?.id;
+                      return (
+                        <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[75%] rounded-2xl ${
+                            isMe 
+                              ? 'bg-indigo-600/20 border border-indigo-500/20 text-slate-200 rounded-tr-sm' 
+                              : 'bg-slate-800/50 border border-slate-700/50 text-slate-200 rounded-tl-sm'
+                          } overflow-hidden shadow-sm`}
+                          >
+                            {msg.attachment_url && (
+                              <div className="p-2">
+                                <a href={`${API_URL}${msg.attachment_url}?token=${Cookies.get('access_token')}`} target="_blank" rel="noopener noreferrer" className="cursor-pointer block relative group">
+                                  <img 
+                                    src={`${API_URL}${msg.attachment_url}?token=${Cookies.get('access_token')}`} 
+                                    alt="Attachment" 
+                                    className="rounded-xl max-w-full h-auto object-cover max-h-[300px] transition-transform group-hover:opacity-90"
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">
+                                    <span className="bg-slate-900/80 text-white text-xs px-3 py-1.5 rounded-lg backdrop-blur-sm font-medium">
+                                      Открыть оригинал
+                                    </span>
+                                  </div>
+                                </a>
+                              </div>
+                            )}
+                            
+                            {msg.code_snippet && (
+                              <div className="p-3 w-[600px] max-w-full h-[400px]">
+                                <CodeEditor initialCode={msg.code_snippet} readOnly={false} />
+                              </div>
+                            )}
+
+                            {msg.content && (
+                              <div className="px-5 py-3 text-sm leading-relaxed whitespace-pre-wrap">
+                                {msg.content}
+                              </div>
+                            )}
+                            
+                            <div className={`px-5 py-2 text-[10px] font-medium flex items-center gap-1 ${isMe ? 'text-indigo-400/60 justify-end' : 'text-slate-500 justify-start'}`}>
+                              {new Date(msg.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                              {isMe && (
+                                msg.is_read ? <CheckCheck size={12} className="text-indigo-400" /> : <Check size={12} />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </React.Fragment>
+                ));
+              })()}
               <div ref={messagesEndRef} />
             </div>
 
