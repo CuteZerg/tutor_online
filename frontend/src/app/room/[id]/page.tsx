@@ -41,6 +41,7 @@ export default function RoomPage() {
 
   const [token, setToken] = useState('');
   const [serverUrl, setServerUrl] = useState('');
+  const [peerUserId, setPeerUserId] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,6 +75,9 @@ export default function RoomPage() {
       try {
         const res = await api.get(`/room/${id}/token`);
         setToken(res.data.token);
+        if (res.data.peer_user_id) {
+          setPeerUserId(res.data.peer_user_id);
+        }
       } catch (err) {
         console.error('Failed to get token', err);
         alert('Ошибка при подключении к классу. Возможно класс еще не создан или у вас нет доступа.');
@@ -133,7 +137,7 @@ export default function RoomPage() {
           </button>
         </div>
         <div className="flex-1 p-6 bg-slate-900/50 flex flex-col min-h-0 relative" style={{ height: 'calc(100% - 4rem)' }}>
-          <Whiteboard />
+          <Whiteboard peerUserId={peerUserId} />
         </div>
       </div>
 
